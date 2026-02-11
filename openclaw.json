@@ -1,0 +1,95 @@
+{
+  "$schema": "https://raw.githubusercontent.com/openclaw/openclaw/main/schema.json",
+  "version": "2026.2.9",
+
+  "mcpServers": {
+    "livekit-docs": {
+      "transport": "http",
+      "url": "https://docs.livekit.io/mcp",
+      "description": "LiveKit documentation browser and search - provides access to LiveKit docs, code examples, and changelogs"
+    }
+  },
+
+  "channels": [
+    {
+      "id": "aime-voice",
+      "type": "custom",
+      "name": "AIME Voice Agent",
+      "description": "LiveKit-powered voice agent for GoHighLevel CRM",
+      "enabled": true
+    }
+  ],
+
+  "agents": {
+    "defaults": {
+      "model": "claude-sonnet-4.5",
+      "temperature": 0.7,
+      "maxTokens": 4096,
+      "tools": {
+        "enabled": ["all"],
+        "mcp": {
+          "enabled": true,
+          "servers": ["livekit-docs"]
+        }
+      },
+      "memorySearch": {
+        "enabled": true,
+        "maxResults": 10
+      }
+    }
+  },
+
+  "gateway": {
+    "bind": "localhost",
+    "port": 3030,
+    "auth": {
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    }
+  },
+
+  "providers": {
+    "anthropic": {
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "models": {
+        "claude-sonnet-4.5": {
+          "maxTokens": 8192,
+          "contextWindow": 200000
+        },
+        "claude-haiku-4.5": {
+          "maxTokens": 4096,
+          "contextWindow": 200000
+        },
+        "claude-opus-4.6": {
+          "maxTokens": 16384,
+          "contextWindow": 200000
+        }
+      }
+    },
+    "openai": {
+      "apiKey": "${OPENAI_API_KEY}",
+      "models": {
+        "gpt-4": {
+          "maxTokens": 4096,
+          "contextWindow": 8192
+        }
+      }
+    }
+  },
+
+  "env": {
+    "LIVEKIT_URL": "${LIVEKIT_URL}",
+    "LIVEKIT_API_KEY": "${LIVEKIT_API_KEY}",
+    "LIVEKIT_API_SECRET": "${LIVEKIT_API_SECRET}",
+    "LIVEKIT_SIP_URI": "${LIVEKIT_SIP_URI}",
+    "LIVEKIT_PHONE_NUMBER": "${LIVEKIT_PHONE_NUMBER}",
+    "GHL_CLIENT_ID": "${GHL_CLIENT_ID}",
+    "GHL_CLIENT_SECRET": "${GHL_CLIENT_SECRET}",
+    "GHL_PIT_TOKEN": "${GHL_PIT_TOKEN}",
+    "OPENCLAW_BASE_URL": "http://localhost:3000",
+    "DEEPGRAM_API_KEY": "${DEEPGRAM_API_KEY}"
+  },
+
+  "plugins": {
+    "enabled": ["ghl", "contact-memory", "model-router", "bridge"]
+  }
+}

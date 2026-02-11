@@ -1,0 +1,17 @@
+# LiveKit Agents Framework
+livekit>=0.11.0
+livekit-agents>=0.8.0
+livekit-plugins-deepgram>=0.6.0
+livekit-plugins-openai>=0.7.0
+livekit-plugins-cartesia>=0.2.0
+livekit-plugins-anthropic>=0.1.0
+
+# HTTP client for OpenClaw bridge
+httpx>=0.27.0
+aiohttp>=3.9.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Utilities
+pydantic>=2.5.0
