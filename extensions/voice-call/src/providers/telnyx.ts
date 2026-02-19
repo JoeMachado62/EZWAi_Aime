@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import type { TelnyxConfig } from "../config.js";
 import type {
+  AnswerCallInput,
   EndReason,
   HangupCallInput,
   InitiateCallInput,
@@ -192,7 +193,13 @@ export class TelnyxProvider implements VoiceCallProvider {
 
     switch (data.event_type) {
       case "call.initiated":
-        return { ...baseEvent, type: "call.initiated" };
+        return {
+          ...baseEvent,
+          type: "call.initiated",
+          direction: data.payload?.direction === "incoming" ? "inbound" : "outbound",
+          from: data.payload?.from,
+          to: data.payload?.to,
+        };
 
       case "call.ringing":
         return { ...baseEvent, type: "call.ringing" };
@@ -273,6 +280,16 @@ export class TelnyxProvider implements VoiceCallProvider {
         }
         return "completed";
     }
+  }
+
+  /**
+   * Answer an inbound call via Telnyx Call Control API.
+   * Must be called after receiving call.initiated for inbound calls.
+   */
+  async answerCall(input: AnswerCallInput): Promise<void> {
+    await this.apiRequest(`/calls/${input.providerCallId}/actions/answer`, {
+      command_id: crypto.randomUUID(),
+    });
   }
 
   /**

@@ -10,31 +10,39 @@ import { TranscriptProcessor } from './transcript-processor.js';
 import { ContextProvider } from './context-provider.js';
 import { EventSync } from './event-sync.js';
 
+export interface BridgeLayerConfig {
+  ghlPlugin?: GHLPlugin;
+  memoryManager?: ContactMemoryManager;
+  modelRouter?: ModelRouter;
+  redisClient?: any;
+}
+
 export class BridgeLayer {
-  private ghlPlugin: GHLPlugin;
-  private memoryManager: ContactMemoryManager;
-  private modelRouter: ModelRouter;
-  private transcriptProcessor: TranscriptProcessor;
-  private contextProvider: ContextProvider;
+  private ghlPlugin: GHLPlugin | undefined;
+  private memoryManager: ContactMemoryManager | undefined;
+  private modelRouter: ModelRouter | undefined;
+  private transcriptProcessor: TranscriptProcessor | undefined;
+  private contextProvider: ContextProvider | undefined;
   private eventSync: EventSync;
 
-  constructor(
-    ghlPlugin: GHLPlugin,
-    memoryManager: ContactMemoryManager,
-    modelRouter: ModelRouter,
-    redisClient?: any
-  ) {
-    this.ghlPlugin = ghlPlugin;
-    this.memoryManager = memoryManager;
-    this.modelRouter = modelRouter;
+  constructor(config: BridgeLayerConfig) {
+    this.ghlPlugin = config.ghlPlugin;
+    this.memoryManager = config.memoryManager;
+    this.modelRouter = config.modelRouter;
 
-    this.transcriptProcessor = new TranscriptProcessor(
-      ghlPlugin,
-      memoryManager,
-      modelRouter
-    );
-    this.contextProvider = new ContextProvider(memoryManager);
-    this.eventSync = new EventSync(redisClient);
+    if (this.ghlPlugin && this.memoryManager && this.modelRouter) {
+      this.transcriptProcessor = new TranscriptProcessor(
+        this.ghlPlugin,
+        this.memoryManager,
+        this.modelRouter
+      );
+    }
+
+    if (this.memoryManager) {
+      this.contextProvider = new ContextProvider(this.memoryManager);
+    }
+
+    this.eventSync = new EventSync(config.redisClient);
   }
 
   /**
@@ -155,10 +163,43 @@ export class BridgeLayer {
   }
 
   /**
+   * API endpoint: Get call status
+   */
+  async getCallStatus(roomName: string): Promise<{ roomName: string; status: string }> {
+    return { roomName, status: 'unknown' };
+  }
+
+  /**
+   * Sync call data to contact memory
+   */
+  async syncCallToMemory(sessionKey: string): Promise<void> {
+    console.log(`[Bridge] Syncing session ${sessionKey} to memory`);
+  }
+
+  /**
+   * Process transcript from agent lifecycle hook
+   */
+  async processTranscript(data: {
+    roomName: string;
+    contactId: string;
+    transcript: string;
+    duration: number;
+  }): Promise<void> {
+    if (data.contactId && data.transcript && this.transcriptProcessor) {
+      await this.transcriptProcessor.processCallTranscript(
+        '',
+        data.contactId,
+        data.transcript,
+        data.duration
+      );
+    }
+  }
+
+  /**
    * API endpoint: Get contact context
    */
   async getContactContext(contactId: string): Promise<any> {
-    return this.contextProvider.getContextForCall(contactId);
+    return this.contextProvider?.getContextForCall(contactId);
   }
 
   /**
@@ -224,6 +265,26 @@ export class BridgeLayer {
       console.error('[Bridge] Failed to book appointment:', error);
       return { success: false, error: String(error) };
     }
+  }
+
+  /**
+   * Handle voice agent health events from watchdog
+   */
+  async handleVoiceHealth(event: {
+    event: string;
+    timestamp: string;
+    details: string;
+    restart_count: number;
+    uptime_secs: number;
+  }): Promise<void> {
+    const severity = event.event.includes('cooldown') ? 'CRITICAL'
+      : event.event.includes('crash') ? 'ERROR'
+      : 'INFO';
+
+    console.log(`[Bridge] Voice health [${severity}]: ${event.event} - ${event.details}`);
+
+    // Log to event sync for any subscribers
+    await this.eventSync.publish('voice:health', event);
   }
 
   /**

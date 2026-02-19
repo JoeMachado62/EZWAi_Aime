@@ -105,6 +105,19 @@ export function processEvent(ctx: CallManagerContext, event: NormalizedEvent): v
       to: event.to || ctx.config.fromNumber || "unknown",
     });
 
+    // Answer the inbound call (required for Telnyx Call Control API)
+    if (ctx.provider?.answerCall && call.providerCallId) {
+      ctx.provider.answerCall({
+        callId: call.callId,
+        providerCallId: call.providerCallId,
+      }).catch((err) => {
+        console.error(
+          `[voice-call] Failed to answer inbound call ${call!.callId}:`,
+          err instanceof Error ? err.message : err,
+        );
+      });
+    }
+
     // Normalize event to internal ID for downstream consumers.
     event.callId = call.callId;
   }

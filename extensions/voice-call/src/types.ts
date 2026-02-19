@@ -233,6 +233,11 @@ export type StopListeningInput = {
   providerCallId: ProviderCallId;
 };
 
+export type AnswerCallInput = {
+  callId: CallId;
+  providerCallId: ProviderCallId;
+};
+
 // -----------------------------------------------------------------------------
 // Outbound Call Options
 // -----------------------------------------------------------------------------

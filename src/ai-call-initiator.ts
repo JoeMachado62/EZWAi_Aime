@@ -120,4 +120,70 @@ After the call, you will report back:
 
 Begin the call now.`;
   }
+
+  /**
+   * Generate a personalized prompt for a contact in a batch operation.
+   * Uses Claude to adapt a base instruction based on the contact's CRM history.
+   */
+  async generatePersonalizedPrompt(
+    baseInstruction: string,
+    contactContext: {
+      name: string;
+      tags: string[];
+      conversations: Array<{ body?: string; direction?: string; dateAdded?: string }>;
+      tasks: Array<{ title?: string; dueDate?: string; completed?: boolean }>;
+    }
+  ): Promise<string> {
+    // Build context summary for Claude
+    let contextSummary = `Contact: ${contactContext.name}\n`;
+    if (contactContext.tags.length > 0) {
+      contextSummary += `Tags: ${contactContext.tags.join(', ')}\n`;
+    }
+    if (contactContext.conversations.length > 0) {
+      contextSummary += `Recent messages:\n`;
+      for (const msg of contactContext.conversations.slice(-5)) {
+        const dir = msg.direction === 'inbound' ? 'Customer' : 'Agent';
+        contextSummary += `  [${dir}] ${(msg.body || '').slice(0, 150)}\n`;
+      }
+    }
+    if (contactContext.tasks.length > 0) {
+      const openTasks = contactContext.tasks.filter(t => !t.completed);
+      if (openTasks.length > 0) {
+        contextSummary += `Open tasks:\n`;
+        for (const task of openTasks) {
+          contextSummary += `  - ${task.title} (due: ${task.dueDate || 'N/A'})\n`;
+        }
+      }
+    }
+
+    const prompt = `You are generating a personalized phone call script. Given the base instruction and the contact's CRM history, create a natural, personalized version of the instruction.
+
+BASE INSTRUCTION: ${baseInstruction}
+
+CONTACT CONTEXT:
+${contextSummary}
+
+Generate a personalized system prompt for an AI voice agent making this call. Reference specific details from their history when relevant. Keep it professional and natural. Output ONLY the system prompt text, nothing else.`;
+
+    try {
+      const response = await this.anthropic.messages.create({
+        model: 'claude-sonnet-4.5',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const content = response.content[0];
+      if (content.type === 'text') {
+        return content.text;
+      }
+    } catch (error) {
+      // Fallback: use base instruction with contact name
+      console.error('Failed to generate personalized prompt:', error);
+    }
+
+    // Fallback prompt
+    return `${baseInstruction}\n\nYou are calling ${contactContext.name}. ${
+      contactContext.tags.length > 0 ? `They are tagged: ${contactContext.tags.join(', ')}.` : ''
+    } Be friendly and professional.`;
+  }
 }

@@ -1,0 +1,26 @@
+{
+  "version": "1.1",
+  "default_tenant": {
+    "location_id": "ENV:DEFAULT_GHL_LOCATION_ID",
+    "business_name": "AIME Business"
+  },
+  "tenants": {
+    "+12392169696": {
+      "location_id": "6LvSeUzOMEkQrC9oF5AI",
+      "business_name": "EZWAi AIME",
+      "timezone": "America/New_York",
+      "tts_provider": "inworld",
+      "tts_voice": "Sarah",
+      "prompt_file_inbound": "prompts/ezwai_aime_inbound.txt",
+      "prompt_file_outbound": "prompts/ezwai_aime_outbound.txt"
+    },
+    "+1XXXXXXXXXX": {
+      "location_id": "ENV:CARSISTANT_GHL_LOCATION_ID",
+      "business_name": "Carsistant",
+      "timezone": "America/New_York",
+      "tts_provider": "elevenlabs",
+      "tts_voice": "Josh",
+      "prompt_file_inbound": "prompts/carsistant_inbound.txt"
+    }
+  }
+}

@@ -8,6 +8,16 @@ import type { OpenClawPluginToolContext } from '../types.js';
 import { GHLPlugin, loadGHLConfigFromEnv } from './index.js';
 import type { AgentToolResult } from '@mariozechner/pi-agent-core';
 
+/** Helper to create a properly formatted success result */
+function successResult(text: string): AgentToolResult<unknown> {
+  return { content: [{ type: 'text', text }] };
+}
+
+/** Helper to create a properly formatted error result */
+function errorResult(msg: string): AgentToolResult<unknown> {
+  return { content: [{ type: 'text', text: JSON.stringify({ status: 'error', error: msg }) }] };
+}
+
 /**
  * Create GHL agent tools for OpenClaw
  */

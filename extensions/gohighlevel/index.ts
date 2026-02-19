@@ -321,24 +321,23 @@ const ghlPlugin: OpenClawPluginDefinition = {
     api.registerTool(createGHLToolsExpanded, {
       names: [
         // Contacts
-        'ghl_get_contact', 'ghl_search_contacts',
+        'ghl_get_contact', 'ghl_search_contacts', 'ghl_create_contact', 'ghl_update_contact',
         // Conversations
         'ghl_get_conversation_history', 'ghl_send_message',
-        // Tasks
-        'ghl_create_task', 'ghl_get_contact_tasks', 'ghl_update_task',
+        // Tasks & Notes
+        'ghl_create_task', 'ghl_get_contact_tasks', 'ghl_update_task', 'ghl_add_note',
+        // Calendars & Appointments
+        'ghl_list_calendars', 'ghl_get_calendar_slots', 'ghl_create_appointment', 'ghl_get_contact_appointments',
         // Workflows
         'ghl_list_workflows', 'ghl_trigger_workflow',
         // Opportunities
         'ghl_list_pipelines', 'ghl_get_contact_opportunities', 'ghl_create_opportunity', 'ghl_update_opportunity',
         // Tags & Smart Lists
         'ghl_get_tags', 'ghl_add_tag', 'ghl_remove_tag', 'ghl_get_contacts_by_tag', 'ghl_get_contacts_by_tags',
-        // Campaigns
-        'ghl_create_campaign', 'ghl_start_campaign', 'ghl_pause_campaign', 'ghl_get_campaign',
-        'ghl_get_next_campaign_contact', 'ghl_mark_campaign_contact', 'ghl_bulk_sms_campaign'
       ]
     });
 
-    api.logger.info('GoHighLevel tools registered - 27 tools available');
+    api.logger.info('GoHighLevel tools registered - 28 tools available');
   },
 
   activate(api: OpenClawPluginApi) {

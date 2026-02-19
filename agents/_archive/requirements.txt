@@ -1,6 +1,6 @@
 # LiveKit Agents Framework
 livekit>=0.11.0
-livekit-agents>=0.8.0
+livekit-agents>=1.0.0
 livekit-plugins-deepgram>=0.6.0
 livekit-plugins-openai>=0.7.0
 livekit-plugins-cartesia>=0.2.0

@@ -3,7 +3,7 @@
  * Conversation and message history retrieval
  */
 
-import { Client } from '@gohighlevel/api-client';
+import { HighLevel } from '@gohighlevel/api-client';
 import type { GHLConversation, GHLMessage } from './types.js';
 import type { GHLAuth } from './auth.js';
 
@@ -18,12 +18,12 @@ export class GHLConversations {
   /**
    * Get GHL API client with valid authentication
    */
-  private async getClient(locationId: string): Promise<Client> {
+  private async getClient(locationId: string): Promise<HighLevel> {
     const accessToken = await this.auth.getValidAccessToken(locationId);
 
-    return new Client({
-      accessToken,
-      version: this.apiVersion,
+    return new HighLevel({
+      locationAccessToken: accessToken,
+      apiVersion: this.apiVersion,
     });
   }
 

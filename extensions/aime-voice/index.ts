@@ -57,7 +57,17 @@ const aimeVoicePlugin: OpenClawPluginDefinition = {
       handler: async (req, res) => {
         try {
           const bridge = initializeBridge();
-          const result = await bridge.processCompletedCall(req.body);
+          // Normalize snake_case from Python voice agent to camelCase
+          const body = req.body;
+          const normalized = {
+            contactId: body.contactId || body.contact_id,
+            locationId: body.locationId || body.location_id,
+            phone: body.phone,
+            transcript: body.transcript,
+            durationSeconds: body.durationSeconds || body.duration_seconds || 0,
+            roomName: body.roomName || body.room_name,
+          };
+          const result = await bridge.processCall(normalized);
 
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
@@ -105,8 +115,16 @@ const aimeVoicePlugin: OpenClawPluginDefinition = {
       handler: async (req, res) => {
         try {
           const bridge = initializeBridge();
-          // Handle call completion webhook from LiveKit
-          const result = await bridge.handleCallCompletion(req.body);
+          // Handle call completion webhook from voice agent
+          const body = req.body;
+          const normalized = {
+            contactId: body.metadata?.contact_id || body.contact_id,
+            locationId: body.metadata?.location_id || body.location_id || '',
+            transcript: body.transcript || '',
+            durationSeconds: 0,
+            roomName: body.roomName || body.room_name || '',
+          };
+          const result = await bridge.processCall(normalized);
 
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
@@ -223,7 +241,7 @@ const aimeVoicePlugin: OpenClawPluginDefinition = {
         },
         required: ['phoneNumber', 'purpose']
       },
-      execute: async (params) => {
+      execute: async (_toolCallId: string, params: any) => {
         try {
           api.logger.info(`[AIME Voice] Initiating outbound call to ${params.phoneNumber}`);
 
@@ -252,14 +270,18 @@ const aimeVoicePlugin: OpenClawPluginDefinition = {
           api.logger.info(`[AIME Voice] Call initiated: Room ${callResult.roomName}`);
 
           return {
-            type: 'success',
-            content: `Outbound call initiated to ${params.phoneNumber}.\nRoom: ${callResult.roomName}\nPurpose: ${params.purpose}\n\nThe call is in progress. A report will be sent to ${params.reportTo || 'you'} when the call completes.`
+            content: [{
+              type: 'text',
+              text: `Outbound call initiated to ${params.phoneNumber}.\nRoom: ${callResult.roomName}\nPurpose: ${params.purpose}\n\nThe call is in progress. A report will be sent to ${params.reportTo || 'you'} when the call completes.`
+            }]
           };
         } catch (error) {
           api.logger.error('[AIME Voice] Outbound call failed:', error);
           return {
-            type: 'error',
-            error: `Failed to initiate call: ${error instanceof Error ? error.message : String(error)}`
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ status: 'error', error: `Failed to initiate call: ${error instanceof Error ? error.message : String(error)}` })
+            }]
           };
         }
       }

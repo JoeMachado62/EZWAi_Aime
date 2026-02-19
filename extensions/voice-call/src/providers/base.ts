@@ -1,4 +1,5 @@
 import type {
+  AnswerCallInput,
   HangupCallInput,
   InitiateCallInput,
   InitiateCallResult,
@@ -37,6 +38,12 @@ export interface VoiceCallProvider {
    * Returns events and optional response to send back to provider.
    */
   parseWebhookEvent(ctx: WebhookContext): ProviderWebhookParseResult;
+
+  /**
+   * Answer an inbound call (required for Telnyx Call Control API).
+   * Optional — providers using response-based control (Twilio/Plivo) don't need this.
+   */
+  answerCall?(input: AnswerCallInput): Promise<void>;
 
   /**
    * Initiate an outbound call.

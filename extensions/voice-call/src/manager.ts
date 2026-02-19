@@ -564,6 +564,19 @@ export class CallManager {
         event.to || this.config.fromNumber || "unknown",
       );
 
+      // Answer the inbound call (required for Telnyx Call Control API)
+      if (this.provider?.answerCall && call.providerCallId) {
+        this.provider.answerCall({
+          callId: call.callId,
+          providerCallId: call.providerCallId,
+        }).catch((err) => {
+          console.error(
+            `[voice-call] Failed to answer inbound call ${call!.callId}:`,
+            err instanceof Error ? err.message : err,
+          );
+        });
+      }
+
       // Update the event's callId to use our internal ID
       event.callId = call.callId;
     }
