@@ -1,0 +1,22 @@
+[Unit]
+Description=OpenClaw AIME Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=aime
+WorkingDirectory=/opt/aime/app
+ExecStart=/usr/bin/node openclaw.mjs gateway --allow-unconfigured
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/aime/app/.env
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/aime /home/aime/.openclaw
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

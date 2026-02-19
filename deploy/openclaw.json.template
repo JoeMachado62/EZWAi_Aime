@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "lastTouchedVersion": "1.0.0",
+    "lastTouchedAt": "2026-02-19T00:00:00.000Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-19T00:00:00.000Z",
+    "lastRunVersion": "1.0.0",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "agents": {
+    "defaults": {
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      },
+      "compaction": {
+        "mode": "safeguard",
+        "reserveTokensFloor": 5000
+      },
+      "heartbeat": {
+        "every": "30m"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "workspace": "/home/aime/.openclaw/workspace"
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "channels": {
+    "telegram": {
+      "dmPolicy": "open",
+      "allowFrom": ["*"],
+      "accounts": {
+        "default": {}
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "plugins": {
+    "slots": {
+      "memory": "contact-memory"
+    },
+    "entries": {
+      "gohighlevel": {
+        "enabled": true
+      },
+      "voice-call": {
+        "enabled": true,
+        "config": {
+          "provider": "telnyx",
+          "fromNumber": "+12392169696",
+          "inboundPolicy": "open",
+          "inboundGreeting": "Hello, this is AIME, your AI office manager. How can I help you today?",
+          "outbound": {
+            "defaultMode": "conversation"
+          },
+          "maxDurationSeconds": 600,
+          "serve": {
+            "port": 3334,
+            "bind": "127.0.0.1",
+            "path": "/voice/webhook"
+          },
+          "responseSystemPrompt": "You are AIME, a professional AI office manager for EZWAi. You handle appointments, answer questions, and help callers with their needs. Keep responses brief and conversational, 1 to 2 sentences max. Do not use markdown, asterisks, or special formatting in your responses.",
+          "responseModel": "anthropic/claude-sonnet-4-5-20250929",
+          "responseTimeoutMs": 30000,
+          "maxConcurrentCalls": 3,
+          "skipSignatureVerification": false
+        }
+      },
+      "contact-memory": {
+        "enabled": true
+      },
+      "memory-core": {
+        "enabled": false
+      },
+      "memory-lancedb": {
+        "enabled": false
+      },
+      "model-router": {
+        "enabled": true
+      },
+      "telegram": {
+        "enabled": true
+      }
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "CHANGE_ME_generate_with_openssl_rand_hex_24"
+    },
+    "port": 18789,
+    "bind": "loopback",
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  }
+}
