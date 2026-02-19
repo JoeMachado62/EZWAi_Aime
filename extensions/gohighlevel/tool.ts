@@ -3,8 +3,7 @@
  * OpenClaw tool wrapper for GHL CRM integration
  */
 
-import type { AnyAgentTool } from '../../agents/tools/common.js';
-import type { OpenClawPluginToolContext } from '../types.js';
+import type { AnyAgentTool } from 'openclaw/plugin-sdk';
 import { GHLPlugin, loadGHLConfigFromEnv } from './index.js';
 import type { AgentToolResult } from '@mariozechner/pi-agent-core';
 
@@ -21,7 +20,7 @@ function errorResult(msg: string): AgentToolResult<unknown> {
 /**
  * Create GHL agent tools for OpenClaw
  */
-export function createGHLTool(ctx: OpenClawPluginToolContext): AnyAgentTool[] | null {
+export function createGHLTool(ctx: { config?: Record<string, any> }): AnyAgentTool[] | null {
   try {
     // Load GHL config from environment or plugin config
     const config = ctx.config?.plugins?.gohighlevel || loadGHLConfigFromEnv();

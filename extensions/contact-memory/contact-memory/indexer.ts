@@ -3,7 +3,7 @@
  * Processes incoming data into searchable memory
  */
 
-import type { GHLContact, GHLMessage } from '../../plugins/ghl/types.js';
+import type { GHLContact, GHLMessage } from '../../gohighlevel/types.js';
 import type {
   ContactMemoryEntry,
   Interaction,

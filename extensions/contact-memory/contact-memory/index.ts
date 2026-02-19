@@ -5,7 +5,7 @@
 
 import type { Database } from 'better-sqlite3';
 import BetterSqlite3 from 'better-sqlite3';
-import type { GHLPlugin } from '../../plugins/ghl/index.js';
+import type { GHLPlugin } from '../../gohighlevel/index.js';
 import type {
   ContactMemoryEntry,
   MemoryContext,

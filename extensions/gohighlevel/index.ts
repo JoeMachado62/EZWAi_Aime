@@ -304,10 +304,10 @@ export function loadGHLConfigFromEnv(): GHLConfig {
  * OpenClaw Plugin Definition
  * This integrates GHL with OpenClaw's plugin system
  */
-import type { OpenClawPluginApi, OpenClawPluginDefinition } from '../types.js';
+import type { OpenClawPluginApi } from 'openclaw/plugin-sdk';
 import { createGHLToolsExpanded } from './tool-expanded.js';
 
-const ghlPlugin: OpenClawPluginDefinition = {
+const ghlPlugin = {
   id: 'gohighlevel',
   name: 'GoHighLevel CRM',
   description: 'GoHighLevel CRM integration with comprehensive tools: contacts, conversations, tasks, workflows, opportunities, tags, campaigns',

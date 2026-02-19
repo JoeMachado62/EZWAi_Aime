@@ -3,10 +3,10 @@
  * T0-T3 cost-optimized intelligent model routing with tier escalation
  */
 
-import type { OpenClawPluginApi, OpenClawPluginDefinition } from '../types.js';
+import type { OpenClawPluginApi } from 'openclaw/plugin-sdk';
 import { ModelRouter } from './model-router/index.js';
 
-const modelRouterPlugin: OpenClawPluginDefinition = {
+const modelRouterPlugin = {
   id: 'model-router',
   name: 'T0-T3 Model Router',
   description: 'Cost-optimized intelligent model routing with automatic tier escalation',

@@ -3,12 +3,11 @@
  * Unified contact memory with fact extraction and retrieval
  */
 
-import type { OpenClawPluginApi, OpenClawPluginDefinition } from '../types.js';
-import type { AnyAgentTool } from '../../agents/tools/common.js';
+import type { OpenClawPluginApi, AnyAgentTool } from 'openclaw/plugin-sdk';
 import type { AgentToolResult } from '@mariozechner/pi-agent-core';
 import { ContactMemoryManager } from './contact-memory/index.js';
 
-const contactMemoryPlugin: OpenClawPluginDefinition = {
+const contactMemoryPlugin = {
   id: 'contact-memory',
   name: 'Contact Memory System',
   description: 'Unified contact memory with fact extraction and retrieval',
